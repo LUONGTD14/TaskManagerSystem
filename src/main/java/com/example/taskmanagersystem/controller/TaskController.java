@@ -6,6 +6,7 @@ import com.example.taskmanagersystem.dto.request.TaskUpdateRequest;
 import com.example.taskmanagersystem.dto.response.TaskResponse;
 import com.example.taskmanagersystem.service.TaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +17,8 @@ import java.util.List;
 @RequestMapping("/api/tasks")
 @RequiredArgsConstructor
 public class TaskController {
-
-    private final TaskService taskService;
+    @Autowired
+    private TaskService taskService;
 
     @PostMapping
     public ResponseEntity<TaskResponse> addTask(@RequestBody TaskRequest request) {

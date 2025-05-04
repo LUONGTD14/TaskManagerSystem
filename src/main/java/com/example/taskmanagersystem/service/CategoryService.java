@@ -6,18 +6,20 @@ import com.example.taskmanagersystem.mapper.CategoryMapper;
 import com.example.taskmanagersystem.model.Category;
 import com.google.firebase.database.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
-
-    private final CategoryMapper categoryMapper;
+    @Autowired
+    private CategoryMapper categoryMapper;
 
     private DatabaseReference categoryRef;
 
@@ -26,7 +28,7 @@ public class CategoryService {
         this.categoryRef = FirebaseDatabase.getInstance().getReference("categories");
     }
 
-    public CategoryResponse addCategory (CategoryRequest request) {
+    public CategoryResponse addCategory(CategoryRequest request) {
         Category category = categoryMapper.toEntity(request);
         category.setId(UUID.randomUUID().toString());
         categoryRef.child(category.getId()).setValueAsync(category);

@@ -7,19 +7,20 @@ import com.example.taskmanagersystem.mapper.MemberMapper;
 import com.example.taskmanagersystem.model.Member;
 import com.google.firebase.database.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-
-import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
-
-    private final MemberMapper memberMapper;
+    @Autowired
+    private MemberMapper memberMapper;
 
     private DatabaseReference memberRef;
 

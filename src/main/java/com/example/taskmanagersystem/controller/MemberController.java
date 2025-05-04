@@ -4,7 +4,7 @@ import com.example.taskmanagersystem.dto.request.MemberRequest;
 import com.example.taskmanagersystem.dto.response.MemberResponse;
 import com.example.taskmanagersystem.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +14,8 @@ import java.util.List;
 @RequestMapping("/api/members")
 @RequiredArgsConstructor
 public class MemberController {
-
-    private final MemberService memberService;
+    @Autowired
+    private MemberService memberService;
 
     @PostMapping
     public ResponseEntity<MemberResponse> addMember(@RequestBody MemberRequest request) {

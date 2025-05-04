@@ -245,16 +245,22 @@
     }
 
     function showNotification(title, message) {
+        const options = {
+            body: message,
+            icon: '/images/check-icon.png'
+        };
+
         if (Notification.permission === "granted") {
-            new Notification(title, { body: message });
+            new Notification(title, options);
         } else if (Notification.permission !== "denied") {
             Notification.requestPermission().then(permission => {
                 if (permission === "granted") {
-                    new Notification(title, { body: message });
+                    new Notification(title, options);
                 }
             });
         }
     }
+
     function populateMemberDropdowns(data) {
         const memberDropdownIds = ['taskMember1', 'taskMember2', 'taskManager'];
         memberDropdownIds.forEach(id => {
@@ -280,10 +286,19 @@
         });
     }
 
-    function getRemainingTime(endTime) {
+    function parseCustomDate(dateStr) {
+        const [timePart, datePart] = dateStr.split(' ');
+        const [hour, minute] = timePart.split(':').map(Number);
+        const [day, month, year] = datePart.split('/').map(Number);
+
+        return new Date(year, month - 1, day, hour, minute);
+    }
+
+    function getRemainingTime(endTimeStr) {
         const now = new Date();
-        const end = new Date(endTime);
+        const end = parseCustomDate(endTimeStr);
         const diffMs = end - now;
+
         if (diffMs <= 0) return "Hết hạn";
 
         const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -293,9 +308,9 @@
         return `${diffDays} ngày : ${diffHours} h : ${diffMinutes} phút`;
     }
 
-    function getBackgroundColorByRemainingDay(endTime) {
+    function getBackgroundColorByRemainingDay(endTimeStr) {
         const now = new Date();
-        const end = new Date(endTime);
+        const end = parseCustomDate(endTimeStr);
         const diffDays = Math.floor((end - now) / (1000 * 60 * 60 * 24));
 
         if (diffDays >= 10) return '#ffffff';
@@ -304,6 +319,7 @@
         if (diffDays >= 2) return '#fff3cd';
         return '#f8d7da';
     }
+
 
     function loadMembers() {
         fetch('/api/members')
@@ -319,7 +335,7 @@
                 </tr>`;
                     tbody.innerHTML += row;
                 });
-                populateMemberDropdowns(data); // <== bổ sung dòng này
+                populateMemberDropdowns(data);
             });
     }
 
@@ -327,7 +343,6 @@
         fetch('/api/categories')
             .then(res => res.json())
             .then(data => {
-                // Sort giảm dần theo createdAt
                 data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 const tbody = document.querySelector('#categoryTable tbody');
                 tbody.innerHTML = '';
@@ -344,7 +359,7 @@
                 </tr>`;
                     tbody.innerHTML += row;
                 });
-                populateCategoryDropdown(data); // <== bổ sung dòng này
+                populateCategoryDropdown(data);
             });
     }
 
@@ -366,7 +381,6 @@
 
             remainingTimeEl.innerText = `Còn lại ${days} ngày ${hours} giờ ${minutes} phút`;
 
-            // Cập nhật màu nền theo số ngày còn lại
             const bgColor = getBackgroundColorByRemainingDay(endTime);
             card.style.backgroundColor = bgColor;
         });
@@ -457,7 +471,7 @@
             .then(() => {
                 fetch('/api/notifyTaskDone', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
                         title: "Nhiệm vụ hoàn thành",
                         message: `Task ${taskId} vừa được hoàn tất.`
@@ -470,13 +484,10 @@
     }
 
     function editTask(taskId) {
-        // Gọi API lấy task để điền vào modal
         fetch(`/api/tasks/${taskId}`)
             .then(res => res.json())
             .then(task => {
-                // Điền mô tả vào modal
                 document.getElementById('taskDescription').value = task.description || '';
-                // Lưu id task vào dữ liệu modal
                 $('#editTaskModal').data('taskId', taskId);
                 $('#editTaskModal').modal('show');
             });
@@ -499,7 +510,6 @@
     }
 
     function extendTime(taskId) {
-        // Mở modal yêu cầu nhập lý do
         $('#extendTimeModal').data('taskId', taskId);
         $('#extendTimeModal').modal('show');
     }
@@ -507,7 +517,7 @@
     function saveExtension() {
         const taskId = $('#extendTimeModal').data('taskId');
         const reason = document.getElementById('extensionReason').value;
-        const newEndTime = document.getElementById('endTimeEdit').value;  // Lấy thời gian kết thúc mới
+        const newEndTime = document.getElementById('endTimeEdit').value;
 
         if (!reason) {
             alert("Vui lòng nhập lý do gia hạn.");
@@ -525,7 +535,7 @@
         })
             .then(() => {
                 $('#extendTimeModal').modal('hide');
-                renderActiveTasks();  // Cập nhật lại danh sách nhiệm vụ
+                renderActiveTasks();
             })
             .catch(error => alert("Có lỗi khi gia hạn thời gian: " + error));
     }
@@ -583,7 +593,7 @@
             startTime: new Date(startTime.value).toISOString(),
             endTime: new Date(endTime.value).toISOString(),
             reminderTime: new Date(reminderTime.value).toISOString(),
-            status: "todo", // hoặc taskStatus.value nếu có select
+            status: "todo",
             categoryId: taskCategory.value,
             managerId: taskManager.value,
             memberId1: taskMember1.value,
@@ -607,17 +617,13 @@
     });
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Lấy ngày hiện tại
         const now = new Date();
         const yyyy = now.getFullYear();
         const mm = String(now.getMonth() + 1).padStart(2, '0');
         const dd = String(now.getDate()).padStart(2, '0');
-
-        // Tạo các mốc thời gian mặc định
         const startTime = `${yyyy}-${mm}-${dd}T00:00`;
         const endTime = `${yyyy}-${mm}-${dd}T23:59`;
 
-        // reminderTime: 4 tiếng trước endTime
         const reminder = new Date(`${yyyy}-${mm}-${dd}T23:59`);
         reminder.setHours(reminder.getHours() - 4);
         const ryyyy = reminder.getFullYear();
@@ -627,7 +633,6 @@
         const rmin = String(reminder.getMinutes()).padStart(2, '0');
         const reminderTime = `${ryyyy}-${rmm}-${rdd}T${rhh}:${rmin}`;
 
-        // Gán vào input
         document.getElementById('startTime').value = startTime;
         document.getElementById('endTime').value = endTime;
         document.getElementById('reminderTime').value = reminderTime;

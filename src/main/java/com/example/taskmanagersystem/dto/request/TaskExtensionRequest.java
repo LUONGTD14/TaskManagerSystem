@@ -13,4 +13,20 @@ import lombok.experimental.FieldDefaults;
 public class TaskExtensionRequest {
     String reason;
     String endTime;
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
 }
