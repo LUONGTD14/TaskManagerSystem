@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+</head>
+<body>
+<div class="container mt-4">
+    <h2>Task Manager</h2>
+
+    <ul class="nav nav-tabs" id="taskTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-task" data-bs-toggle="tab" data-bs-target="#tasks" type="button"
+                    role="tab">Nhiệm vụ đang thực hiện
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-completed" data-bs-toggle="tab" data-bs-target="#completed" type="button"
+                    role="tab">Hoàn thành / Quá hạn
+            </button>
+        </li>
+        <!-- Tab Thêm Nhiệm Vụ -->
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-addtask" data-bs-toggle="tab" data-bs-target="#addTask" type="button"
+                    role="tab">Thêm Nhiệm vụ
+            </button>
+        </li>
+
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-category" data-bs-toggle="tab" data-bs-target="#category" type="button"
+                    role="tab">Thêm Phân Loại
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-member" data-bs-toggle="tab" data-bs-target="#member" type="button"
+                    role="tab">Thêm Thành Viên
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3">
+        <!-- Tasks Tab -->
+        <div class="tab-pane fade show active" id="tasks" role="tabpanel">
+            <div id="task-list" class="row"></div>
+        </div>
+
+        <!-- Completed/Overdue Tab -->
+        <div class="tab-pane fade" id="completed" role="tabpanel">
+            <div id="completed-list" class="row"></div>
+        </div>
+
+        <!-- Content Tab Thêm Nhiệm Vụ -->
+        <div class="tab-pane fade" id="addTask" role="tabpanel">
+            <h3>Thêm Nhiệm vụ</h3>
+            <form id="addTaskForm">
+                <div class="form-group">
+                    <label for="taskTitle">Tên nhiệm vụ</label>
+                    <input type="text" class="form-control" id="taskTitle" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskCategory">Phân loại</label>
+                    <select class="form-select" id="taskCategory" required>
+                        <option value="">-</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDescription">Mô tả</label>
+                    <input type="text" class="form-control" id="taskDescription">
+                </div>
+
+                <div class="form-group">
+                    <label for="taskMember1">Thành viên 1</label>
+                    <select class="form-select" id="taskMember1">
+                        <option value="">-</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskMember2">Thành viên 2</label>
+                    <select class="form-select" id="taskMember2">
+                        <option value="">-</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskManager">Người phụ trách</label>
+                    <select class="form-select" id="taskManager">
+                        <option value="">-</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="startTime">Thời gian bắt đầu</label>
+                    <input type="datetime-local" class="form-control" id="startTime">
+                </div>
+
+                <div class="form-group">
+                    <label for="endTime">Thời gian kết thúc</label>
+                    <input type="datetime-local" class="form-control" id="endTime">
+                </div>
+
+                <div class="form-group">
+                    <label for="reminderTime">Thời gian nhắc hẹn</label>
+                    <input type="datetime-local" class="form-control" id="reminderTime">
+                </div>
+
+                <button type="submit" class="btn btn-success mt-2">Tạo nhiệm vụ</button>
+            </form>
+        </div>
+
+
+        <!-- Add Category Tab -->
+        <div class="tab-pane fade" id="category" role="tabpanel">
+            <h3>Thêm phân loại</h3>
+            <form id="addCategoryForm">
+                <div class="form-group">
+                    <label for="catName">Tên phân loại</label>
+                    <input type="text" class="form-control" id="catName" required>
+                </div>
+                <div class="form-group">
+                    <label for="catDesc">Mô tả</label>
+                    <input type="text" class="form-control" id="catDesc">
+                </div>
+                <button type="submit" class="btn btn-success mt-2">Thêm phân loại</button>
+            </form>
+
+            <hr>
+            <h4 class="mt-4">Danh sách phân loại</h4>
+            <table class="table table-bordered" id="categoryTable">
+                <thead>
+                <tr>
+                    <th>Tên</th>
+                    <th>Mô tả</th>
+                    <th>Thời gian tạo</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Add Member Tab -->
+        <div class="tab-pane fade" id="member" role="tabpanel">
+            <h3>Thêm thành viên</h3>
+            <form id="addMemberForm">
+                <div class="form-group">
+                    <label for="memberName">Tên</label>
+                    <input type="text" class="form-control" id="memberName" required>
+                </div>
+                <div class="form-group">
+                    <label for="memberKnoxId">Knox ID</label>
+                    <input type="text" class="form-control" id="memberKnoxId" required>
+                </div>
+                <div class="form-group">
+                    <label for="memberPhone">SĐT</label>
+                    <input type="text" class="form-control" id="memberPhone" required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Thêm thành viên</button>
+            </form>
+
+            <hr>
+            <h4 class="mt-4">Danh sách thành viên</h4>
+            <table class="table table-bordered" id="memberTable">
+                <thead>
+                <tr>
+                    <th>Tên</th>
+                    <th>Knox ID</th>
+                    <th>SĐT</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Edit Task -->
+<div class="modal" id="editTaskModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa mô tả</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <textarea id="taskDescriptionEdit" class="form-control" rows="4"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="saveEdit()">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Extend Time -->
+<div class="modal" id="extendTimeModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Gia hạn thời gian</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <textarea id="extensionReason" class="form-control" rows="4"
+                          placeholder="Nhập lý do gia hạn..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="endTimeEdit">Thời gian kết thúc</label>
+                <input type="datetime-local" class="form-control" id="endTimeEdit">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-warning" onclick="saveExtension()">Lưu gia hạn</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    let stompClient = null;
+
+    function connectWebSocket() {
+        const socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/notifications', function (notif) {
+                const data = JSON.parse(notif.body);
+                showNotification(data.title, data.message);
+            });
+        });
+    }
+
+    function showNotification(title, message) {
+        if (Notification.permission === "granted") {
+            new Notification(title, { body: message });
+        } else if (Notification.permission !== "denied") {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    new Notification(title, { body: message });
+                }
+            });
+        }
+    }
+    function populateMemberDropdowns(data) {
+        const memberDropdownIds = ['taskMember1', 'taskMember2', 'taskManager'];
+        memberDropdownIds.forEach(id => {
+            const select = document.getElementById(id);
+            select.innerHTML = '<option value="">-</option>';
+            data.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.id || m._id || m.knoxId || m.name;
+                opt.textContent = m.name;
+                select.appendChild(opt);
+            });
+        });
+    }
+
+    function populateCategoryDropdown(data) {
+        const select = document.getElementById('taskCategory');
+        select.innerHTML = '<option value="">-</option>';
+        data.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.id || c._id || c.name;
+            opt.textContent = c.name;
+            select.appendChild(opt);
+        });
+    }
+
+    function getRemainingTime(endTime) {
+        const now = new Date();
+        const end = new Date(endTime);
+        const diffMs = end - now;
+        if (diffMs <= 0) return "Hết hạn";
+
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const diffHours = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
+        const diffMinutes = Math.floor((diffMs / (1000 * 60)) % 60);
+
+        return `${diffDays} ngày : ${diffHours} h : ${diffMinutes} phút`;
+    }
+
+    function getBackgroundColorByRemainingDay(endTime) {
+        const now = new Date();
+        const end = new Date(endTime);
+        const diffDays = Math.floor((end - now) / (1000 * 60 * 60 * 24));
+
+        if (diffDays >= 10) return '#ffffff';
+        if (diffDays >= 6) return '#cce5ff';
+        if (diffDays >= 4) return '#d4edda';
+        if (diffDays >= 2) return '#fff3cd';
+        return '#f8d7da';
+    }
+
+    function loadMembers() {
+        fetch('/api/members')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#memberTable tbody');
+                tbody.innerHTML = '';
+                data.forEach(m => {
+                    const row = `<tr>
+                    <td>${m.name}</td>
+                    <td>${m.knoxId}</td>
+                    <td>${m.phone}</td>
+                </tr>`;
+                    tbody.innerHTML += row;
+                });
+                populateMemberDropdowns(data); // <== bổ sung dòng này
+            });
+    }
+
+    function loadCategories() {
+        fetch('/api/categories')
+            .then(res => res.json())
+            .then(data => {
+                // Sort giảm dần theo createdAt
+                data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                const tbody = document.querySelector('#categoryTable tbody');
+                tbody.innerHTML = '';
+                data.forEach(c => {
+                    const date = new Date(c.createdAt);
+                    const formatted = date.toLocaleString('vi-VN', {
+                        hour: '2-digit', minute: '2-digit', second: '2-digit',
+                        day: '2-digit', month: '2-digit', year: 'numeric'
+                    });
+                    const row = `<tr>
+                    <td>${c.name}</td>
+                    <td>${c.description}</td>
+                    <td>${formatted}</td>
+                </tr>`;
+                    tbody.innerHTML += row;
+                });
+                populateCategoryDropdown(data); // <== bổ sung dòng này
+            });
+    }
+
+    setInterval(updateRemainingTimes, 5 * 60 * 1000);
+
+    function updateRemainingTimes() {
+        const now = new Date();
+
+        document.querySelectorAll(".task-card").forEach((card) => {
+            const endTime = new Date(card.getAttribute("data-endTime"));
+            const remainingTimeEl = card.querySelector(".remaining-time");
+
+            const diffMs = endTime - now;
+            const diffMins = Math.max(0, Math.floor(diffMs / 1000 / 60));
+
+            const days = Math.floor(diffMins / 1440);
+            const hours = Math.floor((diffMins % 1440) / 60);
+            const minutes = diffMins % 60;
+
+            remainingTimeEl.innerText = `Còn lại ${days} ngày ${hours} giờ ${minutes} phút`;
+
+            // Cập nhật màu nền theo số ngày còn lại
+            const bgColor = getBackgroundColorByRemainingDay(endTime);
+            card.style.backgroundColor = bgColor;
+        });
+    }
+
+
+    function renderActiveTasks() {
+        fetch('/api/tasks')
+            .then(res => res.json())
+            .then(data => {
+                const activeTasks = data.filter(task => (task.status !== 'done' && task.status !== 'over'));
+                const container = document.getElementById('task-list');
+                container.innerHTML = '';
+
+                activeTasks.forEach(task => {
+                    const remaining = getRemainingTime(task.endTime);
+                    const bgColor = getBackgroundColorByRemainingDay(task.endTime);
+                    const truncatedDesc = (task.description || '').split("\n").slice(0, 3).join("\n");
+
+                    const card = document.createElement('div');
+                    card.className = 'col-md-6 mb-3';
+
+                    card.innerHTML = `
+                    <div class="card task-card" style="background-color: ${bgColor};" data-endTime="${task.endTime}">
+                        <div class="card-header text-danger fw-bold remaining-time">
+                            ${remaining}
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-9">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <strong>Bắt đầu:</strong><br>${new Date(task.startTime).toLocaleString()}
+                                        </div>
+                                        <div class="col-6">
+                                            <strong>Kết thúc:</strong><br>${new Date(task.endTime).toLocaleString()}
+                                        </div>
+                                    </div>
+                                    <div class="mt-2">
+                                        <h5 class="card-title">${task.title}</h5>
+                                        <p class="card-text" style="white-space: pre-line; max-height: 4.5em; overflow: hidden;">
+                                            ${truncatedDesc}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-3 d-flex flex-column justify-content-between">
+                                    <button class="btn btn-success mb-1" onclick="markComplete('${task.id}')">Hoàn thành</button>
+                                    <button class="btn btn-primary mb-1" onclick="editTask('${task.id}')">Chỉnh sửa</button>
+                                    <button class="btn btn-warning" onclick="extendTime('${task.id}')">Gia hạn</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                    container.appendChild(card);
+                });
+            });
+    }
+
+    function renderCompletedTasks() {
+        fetch('/api/tasks')
+            .then(res => res.json())
+            .then(data => {
+                const completedTasks = data.filter(task => task.status === 'done');
+                const container = document.getElementById('completed-list');
+                container.innerHTML = '';
+
+                completedTasks.forEach(task => {
+                    const card = document.createElement('div');
+                    card.className = 'col-md-6 mb-3';
+                    card.innerHTML = `
+                      <div class="card">
+                        <div class="card-body">
+                          <h5 class="card-title">${task.title}</h5>
+                          <p><strong>Hoàn thành lúc:</strong> ${task.doneAt}</p>
+                          <p><strong>Mô tả:</strong> ${task.description}</p>
+                        </div>
+                      </div>
+                    `;
+                    container.appendChild(card);
+                });
+            });
+    }
+
+    function markComplete(taskId) {
+        fetch(`/api/tasks/${taskId}/complete`, {method: 'POST'})
+            .then(() => {
+                fetch('/api/notifyTaskDone', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: "Nhiệm vụ hoàn thành",
+                        message: `Task ${taskId} vừa được hoàn tất.`
+                    })
+                });
+                renderActiveTasks();
+                renderCompletedTasks();
+            })
+            .catch(error => alert("Có lỗi khi hoàn thành nhiệm vụ: " + error));
+    }
+
+    function editTask(taskId) {
+        // Gọi API lấy task để điền vào modal
+        fetch(`/api/tasks/${taskId}`)
+            .then(res => res.json())
+            .then(task => {
+                // Điền mô tả vào modal
+                document.getElementById('taskDescription').value = task.description || '';
+                // Lưu id task vào dữ liệu modal
+                $('#editTaskModal').data('taskId', taskId);
+                $('#editTaskModal').modal('show');
+            });
+    }
+
+    function saveEdit() {
+        const taskId = $('#editTaskModal').data('taskId');
+        const newDescription = document.getElementById('taskDescriptionEdit').value;
+
+        fetch(`/api/tasks/${taskId}/edit`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({description: newDescription})
+        })
+            .then(() => {
+                $('#editTaskModal').modal('hide');
+                renderActiveTasks();
+            })
+            .catch(error => alert("Có lỗi khi cập nhật mô tả: " + error));
+    }
+
+    function extendTime(taskId) {
+        // Mở modal yêu cầu nhập lý do
+        $('#extendTimeModal').data('taskId', taskId);
+        $('#extendTimeModal').modal('show');
+    }
+
+    function saveExtension() {
+        const taskId = $('#extendTimeModal').data('taskId');
+        const reason = document.getElementById('extensionReason').value;
+        const newEndTime = document.getElementById('endTimeEdit').value;  // Lấy thời gian kết thúc mới
+
+        if (!reason) {
+            alert("Vui lòng nhập lý do gia hạn.");
+            return;
+        }
+
+
+        fetch(`/api/tasks/${taskId}/extend`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                reason: reason,
+                endTime: new Date(newEndTime).toISOString()
+            })
+        })
+            .then(() => {
+                $('#extendTimeModal').modal('hide');
+                renderActiveTasks();  // Cập nhật lại danh sách nhiệm vụ
+            })
+            .catch(error => alert("Có lỗi khi gia hạn thời gian: " + error));
+    }
+
+
+    loadMembers();
+    loadCategories();
+    renderActiveTasks();
+    renderCompletedTasks();
+
+    document.addEventListener("DOMContentLoaded", () => {
+        connectWebSocket();
+    });
+
+    // Add member
+    document.getElementById('addMemberForm').addEventListener('submit', e => {
+        e.preventDefault();
+        const name = memberName.value;
+        const knoxId = memberKnoxId.value;
+        const phone = memberPhone.value;
+        fetch('/api/members', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name, knoxId, phone})
+        }).then(() => {
+            alert('Thêm thành viên thành công!');
+            addMemberForm.reset();
+            loadMembers();
+        });
+    });
+
+    // Add category
+    document.getElementById('addCategoryForm').addEventListener('submit', e => {
+        e.preventDefault();
+        const name = catName.value;
+        const description = catDesc.value;
+        const createdAt = new Date().toISOString();
+        fetch('/api/categories', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name, description, createdAt})
+        }).then(() => {
+            alert('Thêm phân loại thành công!');
+            addCategoryForm.reset();
+            loadCategories();
+        });
+    });
+    // Add Task
+    document.getElementById('addTaskForm').addEventListener('submit', e => {
+        e.preventDefault();
+
+        const task = {
+            title: taskTitle.value,
+            description: taskDescription.value,
+            startTime: new Date(startTime.value).toISOString(),
+            endTime: new Date(endTime.value).toISOString(),
+            reminderTime: new Date(reminderTime.value).toISOString(),
+            status: "todo", // hoặc taskStatus.value nếu có select
+            categoryId: taskCategory.value,
+            managerId: taskManager.value,
+            memberId1: taskMember1.value,
+            memberId2: taskMember2.value
+        };
+
+        fetch('/api/tasks', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(task)
+        }).then(res => {
+            if (res.ok) {
+                alert('Thêm nhiệm vụ thành công!');
+                addTaskForm.reset();
+            } else {
+                alert('Lỗi khi thêm nhiệm vụ.');
+            }
+            renderActiveTasks();
+            renderCompletedTasks();
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Lấy ngày hiện tại
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+
+        // Tạo các mốc thời gian mặc định
+        const startTime = `${yyyy}-${mm}-${dd}T00:00`;
+        const endTime = `${yyyy}-${mm}-${dd}T23:59`;
+
+        // reminderTime: 4 tiếng trước endTime
+        const reminder = new Date(`${yyyy}-${mm}-${dd}T23:59`);
+        reminder.setHours(reminder.getHours() - 4);
+        const ryyyy = reminder.getFullYear();
+        const rmm = String(reminder.getMonth() + 1).padStart(2, '0');
+        const rdd = String(reminder.getDate()).padStart(2, '0');
+        const rhh = String(reminder.getHours()).padStart(2, '0');
+        const rmin = String(reminder.getMinutes()).padStart(2, '0');
+        const reminderTime = `${ryyyy}-${rmm}-${rdd}T${rhh}:${rmin}`;
+
+        // Gán vào input
+        document.getElementById('startTime').value = startTime;
+        document.getElementById('endTime').value = endTime;
+        document.getElementById('reminderTime').value = reminderTime;
+    });
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
