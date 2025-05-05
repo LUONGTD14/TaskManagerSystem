@@ -17,29 +17,29 @@
     <ul class="nav nav-tabs" id="taskTabs" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="tab-task" data-bs-toggle="tab" data-bs-target="#tasks" type="button"
-                    role="tab">Nhiệm vụ đang thực hiện
+                    role="tab">Pending task
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="tab-completed" data-bs-toggle="tab" data-bs-target="#completed" type="button"
-                    role="tab">Hoàn thành / Quá hạn
+                    role="tab">Completed/Over
             </button>
         </li>
-        <!-- Tab Thêm Nhiệm Vụ -->
+        <!-- Tab Add task -->
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="tab-addtask" data-bs-toggle="tab" data-bs-target="#addTask" type="button"
-                    role="tab">Thêm Nhiệm vụ
+                    role="tab">Add task
             </button>
         </li>
 
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="tab-category" data-bs-toggle="tab" data-bs-target="#category" type="button"
-                    role="tab">Thêm Phân Loại
+                    role="tab">Add category
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="tab-member" data-bs-toggle="tab" data-bs-target="#member" type="button"
-                    role="tab">Thêm Thành Viên
+                    role="tab">Add member
             </button>
         </li>
     </ul>
@@ -55,91 +55,99 @@
             <div id="completed-list" class="row"></div>
         </div>
 
-        <!-- Content Tab Thêm Nhiệm Vụ -->
+        <!-- Content Tab Add task -->
         <div class="tab-pane fade" id="addTask" role="tabpanel">
-            <h3>Thêm Nhiệm vụ</h3>
             <form id="addTaskForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3>Add task</h3>
+                    </div>
+                    <div class="col-md-6 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-success mt-2">Add task</button>
+                    </div>
+                </div>
+
                 <div class="form-group">
-                    <label for="taskTitle">Tên nhiệm vụ</label>
+                    <label for="taskTitle">Name of task</label>
                     <input type="text" class="form-control" id="taskTitle" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="taskCategory">Phân loại</label>
+                    <label for="taskCategory">Category</label>
                     <select class="form-select" id="taskCategory" required>
                         <option value="">-</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="taskDescription">Mô tả</label>
-                    <input type="text" class="form-control" id="taskDescription">
+                    <label for="taskDescription">Description</label>
+                    <input style="height: 200px" type="text" class="form-control" id="taskDescription">
                 </div>
 
-                <div class="form-group">
-                    <label for="taskMember1">Thành viên 1</label>
-                    <select class="form-select" id="taskMember1">
-                        <option value="">-</option>
-                    </select>
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label for="taskMember1">Member 1</label>
+                        <select class="form-select" id="taskMember1">
+                            <option value="">-</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="taskManager">Manager</label>
+                        <select class="form-select" id="taskManager">
+                            <option value="">-</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="taskMember2">Member 2</label>
+                        <select class="form-select" id="taskMember2">
+                            <option value="">-</option>
+                        </select>
+                    </div>
+
                 </div>
 
-                <div class="form-group">
-                    <label for="taskMember2">Thành viên 2</label>
-                    <select class="form-select" id="taskMember2">
-                        <option value="">-</option>
-                    </select>
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label for="startTime">Start time</label>
+                        <input type="datetime-local" class="form-control" id="startTime">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="endTime">End time</label>
+                        <input type="datetime-local" class="form-control" id="endTime">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="reminderTime">Reminder time</label>
+                        <input type="datetime-local" class="form-control" id="reminderTime">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="taskManager">Người phụ trách</label>
-                    <select class="form-select" id="taskManager">
-                        <option value="">-</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="startTime">Thời gian bắt đầu</label>
-                    <input type="datetime-local" class="form-control" id="startTime">
-                </div>
-
-                <div class="form-group">
-                    <label for="endTime">Thời gian kết thúc</label>
-                    <input type="datetime-local" class="form-control" id="endTime">
-                </div>
-
-                <div class="form-group">
-                    <label for="reminderTime">Thời gian nhắc hẹn</label>
-                    <input type="datetime-local" class="form-control" id="reminderTime">
-                </div>
-
-                <button type="submit" class="btn btn-success mt-2">Tạo nhiệm vụ</button>
             </form>
         </div>
 
 
         <!-- Add Category Tab -->
         <div class="tab-pane fade" id="category" role="tabpanel">
-            <h3>Thêm phân loại</h3>
+            <h3>Add category</h3>
             <form id="addCategoryForm">
                 <div class="form-group">
-                    <label for="catName">Tên phân loại</label>
+                    <label for="catName">Category</label>
                     <input type="text" class="form-control" id="catName" required>
                 </div>
                 <div class="form-group">
-                    <label for="catDesc">Mô tả</label>
-                    <input type="text" class="form-control" id="catDesc">
+                    <label for="catDesc">Description</label>
+                    <input style="height: 200px" type="text" class="form-control" id="catDesc">
                 </div>
-                <button type="submit" class="btn btn-success mt-2">Thêm phân loại</button>
+                <button type="submit" class="btn btn-success mt-2">Add category</button>
             </form>
 
             <hr>
-            <h4 class="mt-4">Danh sách phân loại</h4>
+            <h4 class="mt-4">Categories</h4>
             <table class="table table-bordered" id="categoryTable">
                 <thead>
                 <tr>
-                    <th>Tên</th>
-                    <th>Mô tả</th>
-                    <th>Thời gian tạo</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Created time</th>
                 </tr>
                 </thead>
                 <tbody></tbody>
@@ -148,10 +156,10 @@
 
         <!-- Add Member Tab -->
         <div class="tab-pane fade" id="member" role="tabpanel">
-            <h3>Thêm thành viên</h3>
+            <h3>Add member</h3>
             <form id="addMemberForm">
                 <div class="form-group">
-                    <label for="memberName">Tên</label>
+                    <label for="memberName">Name</label>
                     <input type="text" class="form-control" id="memberName" required>
                 </div>
                 <div class="form-group">
@@ -162,15 +170,15 @@
                     <label for="memberPhone">SĐT</label>
                     <input type="text" class="form-control" id="memberPhone" required>
                 </div>
-                <button type="submit" class="btn btn-primary mt-2">Thêm thành viên</button>
+                <button type="submit" class="btn btn-success mt-2">Add member</button>
             </form>
 
             <hr>
-            <h4 class="mt-4">Danh sách thành viên</h4>
+            <h4 class="mt-4">Members</h4>
             <table class="table table-bordered" id="memberTable">
                 <thead>
                 <tr>
-                    <th>Tên</th>
+                    <th>Name</th>
                     <th>Knox ID</th>
                     <th>SĐT</th>
                 </tr>
@@ -186,17 +194,13 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Chỉnh sửa mô tả</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title">Edit description</h5>
             </div>
             <div class="modal-body">
-                <textarea id="taskDescriptionEdit" class="form-control" rows="4"></textarea>
+                <textarea id="taskDescriptionEdit" class="form-control" rows="6"></textarea>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary" onclick="saveEdit()">Lưu thay đổi</button>
+                <button type="button" class="btn btn-primary" onclick="saveEdit()">Save</button>
             </div>
         </div>
     </div>
@@ -207,22 +211,18 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Gia hạn thời gian</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title">Extension time</h5>
             </div>
             <div class="modal-body">
-                <textarea id="extensionReason" class="form-control" rows="4"
-                          placeholder="Nhập lý do gia hạn..."></textarea>
+                <textarea id="extensionReason" class="form-control" rows="6"
+                          placeholder="reason..."></textarea>
             </div>
             <div class="form-group">
-                <label for="endTimeEdit">Thời gian kết thúc</label>
+                <label for="endTimeEdit">New end time</label>
                 <input type="datetime-local" class="form-control" id="endTimeEdit">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-warning" onclick="saveExtension()">Lưu gia hạn</button>
+                <button type="button" class="btn btn-warning" onclick="saveExtension()">Save</button>
             </div>
         </div>
     </div>
@@ -299,13 +299,13 @@
         const end = parseCustomDate(endTimeStr);
         const diffMs = end - now;
 
-        if (diffMs <= 0) return "Hết hạn";
+        if (diffMs <= 0) return "Expired";
 
         const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
         const diffHours = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
         const diffMinutes = Math.floor((diffMs / (1000 * 60)) % 60);
 
-        return `${diffDays} ngày : ${diffHours} h : ${diffMinutes} phút`;
+        return `${diffDays} days : ${diffHours} h : ${diffMinutes} min`;
     }
 
     function getBackgroundColorByRemainingDay(endTimeStr) {
@@ -317,6 +317,11 @@
         if (diffDays >= 6) return '#cce5ff';
         if (diffDays >= 4) return '#d4edda';
         if (diffDays >= 2) return '#fff3cd';
+        return '#f8d7da';
+    }
+
+    function getBackgroundColorByStatus(statusStr) {
+        if (statusStr == 'done') return '#ffffff';
         return '#f8d7da';
     }
 
@@ -379,7 +384,7 @@
             const hours = Math.floor((diffMins % 1440) / 60);
             const minutes = diffMins % 60;
 
-            remainingTimeEl.innerText = `Còn lại ${days} ngày ${hours} giờ ${minutes} phút`;
+            remainingTimeEl.innerText = `Remain ${days} days ${hours} h ${minutes} min`;
 
             const bgColor = getBackgroundColorByRemainingDay(endTime);
             card.style.backgroundColor = bgColor;
@@ -391,14 +396,13 @@
         fetch('/api/tasks')
             .then(res => res.json())
             .then(data => {
-                const activeTasks = data.filter(task => (task.status !== 'done' && task.status !== 'over'));
                 const container = document.getElementById('task-list');
                 container.innerHTML = '';
 
-                activeTasks.forEach(task => {
+                data.forEach(task => {
                     const remaining = getRemainingTime(task.endTime);
                     const bgColor = getBackgroundColorByRemainingDay(task.endTime);
-                    const truncatedDesc = (task.description || '').split("\n").slice(0, 3).join("\n");
+                    const truncatedDesc = (task.description || '');
 
                     const card = document.createElement('div');
                     card.className = 'col-md-6 mb-3';
@@ -413,10 +417,10 @@
                                 <div class="col-9">
                                     <div class="row">
                                         <div class="col-6">
-                                            <strong>Bắt đầu:</strong><br>${new Date(task.startTime).toLocaleString()}
+                                            <strong>Start:</strong><br>${new Date(task.startTime).toLocaleString()}
                                         </div>
                                         <div class="col-6">
-                                            <strong>Kết thúc:</strong><br>${new Date(task.endTime).toLocaleString()}
+                                            <strong>End:</strong><br>${new Date(task.endTime).toLocaleString()}
                                         </div>
                                     </div>
                                     <div class="mt-2">
@@ -427,9 +431,9 @@
                                     </div>
                                 </div>
                                 <div class="col-3 d-flex flex-column justify-content-between">
-                                    <button class="btn btn-success mb-1" onclick="markComplete('${task.id}')">Hoàn thành</button>
-                                    <button class="btn btn-primary mb-1" onclick="editTask('${task.id}')">Chỉnh sửa</button>
-                                    <button class="btn btn-warning" onclick="extendTime('${task.id}')">Gia hạn</button>
+                                    <button class="btn btn-success mb-1" onclick="markComplete('${task.id}')">Done</button>
+                                    <button class="btn btn-primary mb-1" onclick="editTask('${task.id}', \`${truncatedDesc}\`)">Edit</button>
+                                    <button class="btn btn-warning" onclick="extendTime('${task.id}')">Extend</button>
                                 </div>
                             </div>
                         </div>
@@ -442,22 +446,24 @@
     }
 
     function renderCompletedTasks() {
-        fetch('/api/tasks')
+        fetch('/api/tasks/over')
             .then(res => res.json())
             .then(data => {
-                const completedTasks = data.filter(task => task.status === 'done');
                 const container = document.getElementById('completed-list');
                 container.innerHTML = '';
 
-                completedTasks.forEach(task => {
+                data.forEach(task => {
                     const card = document.createElement('div');
+                    const bgColor = getBackgroundColorByStatus(task.status);
                     card.className = 'col-md-6 mb-3';
                     card.innerHTML = `
-                      <div class="card">
+                      <div style="background-color: ${bgColor}" class="card">
                         <div class="card-body">
                           <h5 class="card-title">${task.title}</h5>
-                          <p><strong>Hoàn thành lúc:</strong> ${task.doneAt}</p>
-                          <p><strong>Mô tả:</strong> ${task.description}</p>
+                          <p><strong>Done time:</strong> ${task.doneAt}</p>
+                          <p><strong>End time:</strong> ${task.endTime}</p>
+                          <p><strong>Status:</strong> ${task.status}</p>
+                          <p><strong>Manager:</strong> ${task.managerId}</p>
                         </div>
                       </div>
                     `;
@@ -473,21 +479,22 @@
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        title: "Nhiệm vụ hoàn thành",
-                        message: `Task ${taskId} vừa được hoàn tất.`
+                        title: "Have a task done!",
+                        message: `Task ${taskId} has completed successfully!.`
                     })
                 });
                 renderActiveTasks();
                 renderCompletedTasks();
             })
-            .catch(error => alert("Có lỗi khi hoàn thành nhiệm vụ: " + error));
+            .catch(error => alert("Has an error: " + error));
     }
 
-    function editTask(taskId) {
+    function editTask(taskId, truncatedDesc) {
         fetch(`/api/tasks/${taskId}`)
             .then(res => res.json())
             .then(task => {
-                document.getElementById('taskDescription').value = task.description || '';
+                console.log("description : " + truncatedDesc);
+                document.getElementById('taskDescriptionEdit').value = truncatedDesc || '';
                 $('#editTaskModal').data('taskId', taskId);
                 $('#editTaskModal').modal('show');
             });
@@ -506,7 +513,7 @@
                 $('#editTaskModal').modal('hide');
                 renderActiveTasks();
             })
-            .catch(error => alert("Có lỗi khi cập nhật mô tả: " + error));
+            .catch(error => alert("Has an error: " + error));
     }
 
     function extendTime(taskId) {
@@ -520,7 +527,7 @@
         const newEndTime = document.getElementById('endTimeEdit').value;
 
         if (!reason) {
-            alert("Vui lòng nhập lý do gia hạn.");
+            alert("Please enter a reason.");
             return;
         }
 
@@ -537,7 +544,7 @@
                 $('#extendTimeModal').modal('hide');
                 renderActiveTasks();
             })
-            .catch(error => alert("Có lỗi khi gia hạn thời gian: " + error));
+            .catch(error => alert("Has an error: " + error));
     }
 
 
@@ -561,7 +568,7 @@
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({name, knoxId, phone})
         }).then(() => {
-            alert('Thêm thành viên thành công!');
+            alert('Added member!');
             addMemberForm.reset();
             loadMembers();
         });
@@ -578,7 +585,7 @@
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({name, description, createdAt})
         }).then(() => {
-            alert('Thêm phân loại thành công!');
+            alert('Added category!');
             addCategoryForm.reset();
             loadCategories();
         });
@@ -606,10 +613,10 @@
             body: JSON.stringify(task)
         }).then(res => {
             if (res.ok) {
-                alert('Thêm nhiệm vụ thành công!');
+                alert('Added task!');
                 addTaskForm.reset();
             } else {
-                alert('Lỗi khi thêm nhiệm vụ.');
+                alert('Has an error.');
             }
             renderActiveTasks();
             renderCompletedTasks();

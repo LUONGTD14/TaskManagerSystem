@@ -4,6 +4,8 @@ import com.example.taskmanagersystem.dto.request.TaskRequest;
 import com.example.taskmanagersystem.dto.response.TaskResponse;
 import com.example.taskmanagersystem.mapper.TaskMapper;
 import com.example.taskmanagersystem.model.Task;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.database.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,11 +91,17 @@ public class TaskService {
     public boolean markComplete(String taskId) {
         Task task = getTaskById(taskId);
         if (task != null) {
+            System.out.println("mark complete");
             task.setStatus("done");
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy");
             ZonedDateTime nowVN = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
             String formatted = nowVN.format(formatter);
             task.setDoneAt(formatted);
+            try {
+                System.out.println("Task to save: " + new ObjectMapper().writeValueAsString(task));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
             taskRef.child(taskId).setValueAsync(task);
             return true;
         }

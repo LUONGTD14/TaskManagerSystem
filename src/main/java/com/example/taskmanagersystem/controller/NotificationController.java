@@ -32,20 +32,20 @@ public class NotificationController {
 
     @Scheduled(fixedRate = 5*60*60000)
     public void checkReminders() {
-        System.out.println("Đang kiểm tra reminderTime...");
+        System.out.println("Checking reminderTime...");
         List<TaskResponse> tasks = taskService.getAllTasks();
         for (TaskResponse task : tasks) {
             if (task.getReminderTime() != null) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy");
-                ZonedDateTime doneAt = ZonedDateTime.parse(task.getReminderTime(), formatter.withZone(ZoneId.of("Asia/Ho_Chi_Minh")));
+                ZonedDateTime remined = ZonedDateTime.parse(task.getReminderTime(), formatter.withZone(ZoneId.of("Asia/Ho_Chi_Minh")));
 
                 ZonedDateTime nowVN = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
 
-                System.out.println("Reminder Time: " + doneAt + " | Now: " + nowVN);
-                if (doneAt.isBefore(nowVN)) {
-                    System.out.println("send...");
+                System.out.println("Reminder Time: " + remined + " | Now: " + nowVN);
+                if (remined.isBefore(nowVN) && !task.getStatus().equals("done")) {
+                    System.out.println("send..." + task.getId());
                     NotificationMessage message = new NotificationMessage(
-                            "Nhiệm vụ can hoàn thành",
+                            "Have a task need complete",
                             "Task " + task.getId() + " !!!!!!!!!!!!"
                     );
 

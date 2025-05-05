@@ -11,7 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -27,7 +31,43 @@ public class TaskController {
 
     @GetMapping
     public ResponseEntity<List<TaskResponse>> getAllTasks() {
-        return ResponseEntity.ok(taskService.getAllTasks());
+        List<TaskResponse> allTasks = taskService.getAllTasks();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy");
+        ZonedDateTime nowVN = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+
+        List<TaskResponse> expiredTasks = allTasks.stream()
+                .filter(task -> {
+                    try {
+                        ZonedDateTime end = ZonedDateTime.parse(task.getEndTime(), formatter.withZone(ZoneId.of("Asia/Ho_Chi_Minh")));
+                        return nowVN.isBefore(end) && !task.getStatus().equals("done");
+                    } catch (Exception e) {
+                        return false;
+                    }
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(expiredTasks);
+    }
+    @GetMapping("/over")
+    public ResponseEntity<List<TaskResponse>> getAllTasksOver() {
+        List<TaskResponse> allTasksOver = taskService.getAllTasks();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy");
+        ZonedDateTime nowVN = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+
+        List<TaskResponse> expiredTasks = allTasksOver.stream()
+                .filter(task -> {
+                    try {
+                        ZonedDateTime end = ZonedDateTime.parse(task.getEndTime(), formatter.withZone(ZoneId.of("Asia/Ho_Chi_Minh")));
+                        return end.isBefore(nowVN) || task.getStatus().equals("done");
+                    } catch (Exception e) {
+                        return false;
+                    }
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(expiredTasks);
     }
 
     @PostMapping("/{taskId}/complete")
